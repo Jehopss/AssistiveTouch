@@ -34,12 +34,19 @@ class FloatingButton(private val context: Context) {
             size,
             size,
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
             x = 0
             y = 400
+        }
+
+        val xSpring = WindowSpring { x ->
+            params.x = x
+            if (button.isAttachedToWindow) {
+                windowManager.updateViewLayout(button, params)
+            }
         }
 
         var startX = 0
@@ -58,6 +65,7 @@ class FloatingButton(private val context: Context) {
                     downRawY = event.rawY
                     dragging = false
                     press.press()
+                    xSpring.cancel()
                 }
 
                 MotionEvent.ACTION_MOVE -> {
@@ -77,6 +85,17 @@ class FloatingButton(private val context: Context) {
                         v.performClick()
                     }
                     press.release()
+
+                    if (dragging) {
+                        val screenWidth = windowManager.currentWindowMetrics.bounds.width()
+                        val centerX = params.x + size / 2        // titik tengah tombol
+                        // TODO: targetX = 0 kalau centerX ada di setengah kiri layar,
+                        //       selain itu = screenWidth - size (mepet kanan)
+
+                        val targetX = if (centerX < screenWidth / 2) 0 else screenWidth - size
+                        // TODO: panggil xSpring.animate(dari mana, ke mana)
+                        xSpring.animate(params.x, targetX)
+                    }
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     press.release()

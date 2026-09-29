@@ -9,11 +9,11 @@
     <string name="status_on_title">● Running</string>
     <string name="status_on_body">FloatMenu is on. You can turn it off any time in Accessibility settings.</string>
     <string name="status_off_title">● Off</string>
-    <string name="status_off_body">Turn on FloatMenu in Accessibility settings to get the floating button.</string>
+    <string name="status_off_body">Open Accessibility settings, go to Installed apps → FloatMenu, and turn it on.</string>
     <string name="button_turn_on">Open Accessibility settings</string>
     <string name="button_manage">Manage in Accessibility settings</string>
 
-    <string name="troubleshoot">Landed on the main Accessibility page? Look under Installed apps. Switch greyed out (\"Restricted setting\")? Open App info → ⋮ → Allow restricted settings, then try again.</string>
+    <string name="troubleshoot">Switch greyed out (\"Restricted setting\")? Open App info → ⋮ → Allow restricted settings, then try again.</string>
 
     <string name="why_title">Why Accessibility?</string>
     <string name="why_body">Only an Accessibility service can do the two things FloatMenu needs:\n\n• Show the floating button on top of other apps, without the separate \"display over other apps\" permission.\n• Press system buttons for you: Home, Back, Recents, notifications, quick panel, screenshot, lock screen and power menu.</string>

@@ -10,9 +10,13 @@ import android.view.accessibility.AccessibilityEvent
  */
 class FloatMenuService : AccessibilityService() {
 
+    private var floatingButton: FloatingButton? = null
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         Log.d(TAG, "Service connected")
+        floatingButton = FloatingButton(this)
+        floatingButton?.show()
     }
 
     // The config subscribes to no event types, so this is never called.
@@ -22,6 +26,8 @@ class FloatMenuService : AccessibilityService() {
 
     override fun onDestroy() {
         Log.d(TAG, "Service destroyed")
+        floatingButton?.hide()
+        floatingButton = null
         super.onDestroy()
     }
 

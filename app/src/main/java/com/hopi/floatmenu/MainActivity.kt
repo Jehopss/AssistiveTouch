@@ -1,8 +1,6 @@
 package com.hopi.floatmenu
 
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.content.ActivityNotFoundException
-import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -77,15 +75,9 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    /** Jump straight to FloatMenu's own page; fall back to the main Accessibility list. */
+    // Apps can't deep-link to their own service page (that intent is system-only),
+    // so open the main Accessibility list; the on-screen text says where to look.
     private fun openAccessibilitySettings() {
-        val component = ComponentName(this, FloatMenuService::class.java)
-        val details = Intent(Settings.ACTION_ACCESSIBILITY_DETAILS_SETTINGS)
-            .putExtra(Intent.EXTRA_COMPONENT_NAME, component.flattenToString())
-        try {
-            startActivity(details)
-        } catch (e: ActivityNotFoundException) {
-            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-        }
+        startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     }
 }

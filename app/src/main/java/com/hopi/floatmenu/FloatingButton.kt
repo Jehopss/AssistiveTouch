@@ -28,6 +28,8 @@ class FloatingButton(private val context: Context) {
             }
         }
 
+        val press = PressAnimator(button)
+
         val params = WindowManager.LayoutParams(
             size,
             size,
@@ -55,6 +57,7 @@ class FloatingButton(private val context: Context) {
                     downRawX = event.rawX
                     downRawY = event.rawY
                     dragging = false
+                    press.press()
                 }
 
                 MotionEvent.ACTION_MOVE -> {
@@ -73,6 +76,10 @@ class FloatingButton(private val context: Context) {
                     if (!dragging) {
                         v.performClick()
                     }
+                    press.release()
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    press.release()
                 }
             }
             true

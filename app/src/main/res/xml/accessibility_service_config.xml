@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Minimal on purpose:
+    - no accessibilityEventTypes -> the service receives no events at all
+    - canRetrieveWindowContent=false -> can't read what's on screen
+    - no canTakeScreenshot (screenshots go through GLOBAL_ACTION_TAKE_SCREENSHOT)
+    The service only hosts the overlay and calls performGlobalAction().
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:canRetrieveWindowContent="false"
+    android:description="@string/service_description"
+    android:isAccessibilityTool="true"
+    android:settingsActivity="com.hopi.floatmenu.MainActivity" />

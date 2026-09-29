@@ -1,0 +1,4 @@
+<resources>
+    <!-- DayNight follows the system dark/light setting. -->
+    <style name="Theme.FloatMenu" parent="Theme.Material3.DayNight.NoActionBar" />
+</resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.view.Gravity
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.WindowManager
@@ -55,8 +56,17 @@ class FloatingButton(private val context: Context) {
         var downRawY = 0f
         val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
         var dragging = false
+        var velocityTracker: VelocityTracker? = null
 
         button.setOnTouchListener { v, event ->
+            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                velocityTracker?.recycle()
+                velocityTracker = VelocityTracker.obtain()
+            }
+            val screenEvent = MotionEvent.obtain(event)
+            screenEvent.setLocation(event.rawX, event.rawY)
+            velocityTracker?.addMovement(screenEvent)
+            screenEvent.recycle()
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     startX = params.x
@@ -67,7 +77,6 @@ class FloatingButton(private val context: Context) {
                     press.press()
                     xSpring.cancel()
                 }
-
                 MotionEvent.ACTION_MOVE -> {
                     val dx = event.rawX - downRawX
                     val dy = event.rawY - downRawY
@@ -84,21 +93,25 @@ class FloatingButton(private val context: Context) {
                     if (!dragging) {
                         v.performClick()
                     }
+
                     press.release()
 
                     if (dragging) {
                         val screenWidth = windowManager.currentWindowMetrics.bounds.width()
-                        val centerX = params.x + size / 2        // titik tengah tombol
-                        // TODO: targetX = 0 kalau centerX ada di setengah kiri layar,
-                        //       selain itu = screenWidth - size (mepet kanan)
-
-                        val targetX = if (centerX < screenWidth / 2) 0 else screenWidth - size
-                        // TODO: panggil xSpring.animate(dari mana, ke mana)
-                        xSpring.animate(params.x, targetX)
+                        val centerX = params.x + size / 2
+                        velocityTracker?.computeCurrentVelocity(1000)
+                        val vx = velocityTracker?.xVelocity ?: 0f
+                        val projectedX = centerX + (vx * 0.2f).toInt()
+                        val targetX = if (projectedX < screenWidth / 2) 0 else screenWidth - size
+                        xSpring.animate(params.x, targetX, vx)
                     }
+                    velocityTracker?.recycle()
+                    velocityTracker = nul
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     press.release()
+                    velocityTracker?.recycle()
+                    velocityTracker = null
                 }
             }
             true

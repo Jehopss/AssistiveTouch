@@ -24,9 +24,10 @@ class WindowSpring(onUpdate: (Int) -> Unit) {
     }
 
     /** Spring from [from] to [to]. */
-    fun animate(from: Int, to: Int) {
+    fun animate(from: Int, to: Int, velocity: Float = 0f) {
         animation.cancel()
         holder.value = from.toFloat()
+        animation.setStartVelocity(velocity)
         animation.animateToFinalPosition(to.toFloat())
     }
 

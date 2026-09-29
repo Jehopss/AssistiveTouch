@@ -14,7 +14,7 @@ and the accessibility service can't read screen content.
 ## Build phases
 
 - [x] 1. Skeleton: onboarding screen + empty accessibility service
-- [ ] 2. Floating button (draggable, tap shows a Toast)
+- [x] 2. Floating button (draggable, tap shows a Toast)
 - [ ] 3. Spring physics (edge snap, fling, press scale, idle fade)
 - [ ] 4. Menu with all v1 actions + open/close animations
 - [ ] 5. Settings screen wired to the overlay

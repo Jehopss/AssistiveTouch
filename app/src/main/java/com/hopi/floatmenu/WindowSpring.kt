@@ -8,18 +8,17 @@ import androidx.dynamicanimation.animation.SpringForce
  * Springs one coordinate of the floating window (x or y) toward a target.
  * Windows aren't Views, so we animate a plain number and hand each new value to onUpdate.
  */
-class WindowSpring(onUpdate: (Int) -> Unit) {
-    //             └─ "fungsi titipan": dipanggil tiap angkanya berubah
+class WindowSpring(
+    damping: Float = SpringForce.DAMPING_RATIO_LOW_BOUNCY,
+    onUpdate: (Int) -> Unit) {
 
-    // Angka biasa yang dianimasikan
     private val holder = FloatValueHolder()
 
     private val animation = SpringAnimation(holder).apply {
         spring = SpringForce().apply {
-            stiffness = SpringForce.STIFFNESS_LOW            // tarikan agak santai
-            dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY  // membal dikit
+            stiffness = SpringForce.STIFFNESS_LOW
+            dampingRatio = damping
         }
-        // Tiap frame: kasih angka terbaru ke fungsi titipan
         addUpdateListener { _, value, _ -> onUpdate(value.toInt()) }
     }
 

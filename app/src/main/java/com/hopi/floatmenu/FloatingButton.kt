@@ -7,8 +7,10 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
+import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.dynamicanimation.animation.SpringForce
 import kotlin.math.abs
 
 class FloatingButton(private val context: Context) {
@@ -43,8 +45,15 @@ class FloatingButton(private val context: Context) {
             y = 400
         }
 
-        val xSpring = WindowSpring { x ->
+        val xSpring = WindowSpring (SpringForce.DAMPING_RATIO_LOW_BOUNCY) { x ->
             params.x = x
+            if (button.isAttachedToWindow) {
+                windowManager.updateViewLayout(button, params)
+            }
+        }
+
+        val ySpring = WindowSpring (SpringForce.DAMPING_RATIO_LOW_BOUNCY) { y ->
+            params.y = y
             if (button.isAttachedToWindow) {
                 windowManager.updateViewLayout(button, params)
             }
@@ -57,6 +66,8 @@ class FloatingButton(private val context: Context) {
         val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
         var dragging = false
         var velocityTracker: VelocityTracker? = null
+        var minY = 0
+        var maxY = 0
 
         button.setOnTouchListener { v, event ->
             if (event.actionMasked == MotionEvent.ACTION_DOWN) {
@@ -76,6 +87,13 @@ class FloatingButton(private val context: Context) {
                     dragging = false
                     press.press()
                     xSpring.cancel()
+                    ySpring.cancel()
+                    val metrics = windowManager.currentWindowMetrics
+                    val bars = metrics.windowInsets.getInsetsIgnoringVisibility(
+                        WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
+                    )
+                    minY = bars.top
+                    maxY = metrics.bounds.height() - bars.bottom - size
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = event.rawX - downRawX
@@ -88,6 +106,7 @@ class FloatingButton(private val context: Context) {
                         params.y = startY + dy.toInt()
                         windowManager.updateViewLayout(v, params)
                     }
+                    params.y = (startY + dy.toInt()).coerceIn(minY, maxY)
                 }
                 MotionEvent.ACTION_UP -> {
                     if (!dragging) {
@@ -104,9 +123,12 @@ class FloatingButton(private val context: Context) {
                         val projectedX = centerX + (vx * 0.2f).toInt()
                         val targetX = if (projectedX < screenWidth / 2) 0 else screenWidth - size
                         xSpring.animate(params.x, targetX, vx)
+                        val vy = velocityTracker?.yVelocity ?: 0f
+                        val targetY = (params.y + (vy * 0.2f).toInt()).coerceIn(minY, maxY)
+                        ySpring.animate(params.y, targetY, vy)
                     }
                     velocityTracker?.recycle()
-                    velocityTracker = nul
+                    velocityTracker = null
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     press.release()
